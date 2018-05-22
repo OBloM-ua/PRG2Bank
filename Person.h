@@ -39,26 +39,21 @@ public:
 
 
     void kuendigen() {
-//        konten.pop_back();
         for (auto &i:konten) {
             i = nullptr;
+            konten.pop_back();
         }
     }
-
-
 
     // My methode
 
     void addKonto(Konto &k) {
-        shared_ptr<Konto> sk = k.shared_from_this();
+        shared_ptr<Konto> sk = make_shared<Konto>(k);
         konten.push_back(sk);
     }
+
     vector<shared_ptr<Konto>> getKonten(){
         return konten;
-    }
-
-    shared_ptr<Person> getShared() {
-        return shared_from_this();
     }
 
     virtual ostream &print(ostream &o) const {

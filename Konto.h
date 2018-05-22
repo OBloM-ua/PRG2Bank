@@ -56,11 +56,10 @@ public:
             weak_ptr<Person> sp = make_shared<Person>(p);
             zeichnungsberechtigt.push_back(sp);
             return true;
-        } else return false;
-    }
-
-    shared_ptr<Konto> getShared() {
-        return shared_from_this();
+        } else {
+            cout << "mehr als 10 zeichnungsberechtigt";
+            return false;
+        }
     }
 
 
@@ -70,22 +69,11 @@ public:
     }
 };
 
-inline ostream &operator<<(ostream &o, const Konto &p) {
-    return p.print(o);
-}
-
-
-
-
-
-
-
-
 class Girokonto : public Konto {
 public:
     Girokonto(Person &p) {
         addPerson(p);
-        gebuehren = 0; //%gebuehren = 1; //%
+        gebuehren = 1; // fix gebuehr in Euro fuer transaktion
         disporahmen = 0;
     }
 
@@ -109,6 +97,7 @@ public:
                  << zeichnungsberechtigt.size() << ", gebuehren= " << gebuehren << "€, GIRKONTO] "<< endl;
     }
 };
+
 
 class Businesskonto : public Konto {
 public:
@@ -140,5 +129,9 @@ public:
                  << zeichnungsberechtigt.size() << ", gebuehren= " << gebuehren << "%, BISNESSKONTO]" <<endl;
     }
 };
+
+inline ostream &operator<<(ostream &o, const Konto &p) {
+    return p.print(o);
+}
 
 #endif
