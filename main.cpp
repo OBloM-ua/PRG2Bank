@@ -14,24 +14,20 @@ int main() {
     Bank b;
     b.neuerKunde("Alexander Kern"); //автоматично створюю Girokonto
     Person& kern = *b.getKunden()[0];
-    kern.neues_konto('g');
-    kern.neues_konto('g');
-    kern.neues_konto('g');
     kern.neues_konto('b');
-    kern.neues_konto('b');
-    kern.neues_konto('b');
-    Konto& kernKonto = *kern.getKonten()[0];
 
-//    b.neuerKunde("Sebastian Strache");
-//    Person& strache = *b.getKunden()[1];
-//    Konto& stracheKonto = *strache.getKonten()[0];
+    Konto& kernGiroKonto = *kern.getKonten()[0];
+    Konto& kernBusinessKonto = *kern.getKonten()[1];
 
 
-    kernKonto.einzahlen(99);
 
-    cout << b;
+    kernGiroKonto.einzahlen(10000);
+    kernBusinessKonto.einzahlen(10000);
 
-    kern.kuendigen();
+
+    kernBusinessKonto.ueberweisen(1000, kernGiroKonto);
+
+
     cout << b;
 
 

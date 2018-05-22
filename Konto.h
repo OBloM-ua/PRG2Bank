@@ -12,12 +12,12 @@ static int counter = 0;// щоб присвоювати номери новим 
 class Person;
 
 class Konto : public enable_shared_from_this<Konto> {
-public:
     string kontonummer;
     int kontostand = 0;
     int disporahmen = 0; // скільки можна зайти в мінус;
     int gebuehren = 1; //oder double
     vector<weak_ptr<Person>> zeichnungsberechtigt;//max 10 mind. 1
+public:
 
     Konto() {
         kontonummer = string("AT") + to_string(counter++);
@@ -62,10 +62,18 @@ public:
         }
     }
 
+    string getKontonummer() const { return kontonummer; }
+    int getKontostand()const { return kontostand;}
+    void setKontostand(int i) { kontostand = i;}
+    int getDisporahmen()const { return disporahmen;}
+    void setDisporahmen(int i) { disporahmen = i;}
+    int getGebuehren()const { return gebuehren;}
+    void setGebuehren(int i) {gebuehren = i;}
+    size_t getZeichSize() const { return zeichnungsberechtigt.size();}
 
     virtual ostream &print(ostream &o) const {
-        return o << '[' << kontonummer << ", " << kontostand << "€, " << " zeichnungsberechtigt="
-                 << zeichnungsberechtigt.size();
+        return o << '[' << getKontonummer() << ", " << getKontostand() << "€, " << " zeichnungsberechtigt="
+                 << getZeichSize();
     }
 };
 
@@ -73,28 +81,29 @@ class Girokonto : public Konto {
 public:
     Girokonto(Person &p) {
         addPerson(p);
-        gebuehren = 1; // fix gebuehr in Euro fuer transaktion
-        disporahmen = 0;
+        setGebuehren(1);// fix gebuehr in Euro fuer transaktion
+        setDisporahmen(0);
     }
 
     bool auszahlen(unsigned betrag) {
-        if (this->kontostand < betrag + gebuehren)
+        if (this->getKontostand() < betrag + getGebuehren())
             return false;
-        kontostand -= betrag + gebuehren;
+        setKontostand(getKontostand() - (betrag + getGebuehren())) ;
         return true;
     };
 
     bool ueberweisen(unsigned betrag, Konto &ziel) {
-        if (this->kontostand < betrag + gebuehren)
+        if (this->getKontostand() < betrag + getGebuehren())
             return false;
-        this->kontostand -= betrag + gebuehren;
-        ziel.kontostand += betrag;
+        setKontostand(getKontostand() - (betrag+getGebuehren()));
+        ziel.setKontostand(ziel.getKontostand()+ betrag);
         return true;
     };
 
     ostream &print(ostream &o) const {
-        return o << "\t[" << kontonummer << ", " << kontostand << "€, disporahmen= " << disporahmen << ", zeichnBerSize= "
-                 << zeichnungsberechtigt.size() << ", gebuehren= " << gebuehren << "€, GIRKONTO] "<< endl;
+        return o << "\t[" << getKontonummer() << ", " << getKontostand() << "€, disporahmen= " << getDisporahmen()
+                 << ", zeichnBerSize= "
+                 << getZeichSize() << ", gebuehren= " << getGebuehren() << "€, GIROKONTO] " << endl;
     }
 };
 
@@ -103,30 +112,31 @@ class Businesskonto : public Konto {
 public:
     Businesskonto(Person &p) {
         addPerson(p);
-        gebuehren = 1; //% вказуємо у процентосах
-        disporahmen = 0; //скільки в мінус можна зайти
+        setGebuehren(1); //% вказуємо у процентосах
+        setDisporahmen(0); //скільки в мінус можна зайти
     }
 
     bool auszahlen(unsigned betrag) {
-        double betragInkGebur = betrag + betrag * gebuehren / 100;
-        if (this->kontostand + disporahmen < betragInkGebur)
+        double betragInkGebur = betrag + betrag * getGebuehren() / 100;
+        if (getKontostand() + getDisporahmen() < betragInkGebur)
             return false;
-        kontostand -= betragInkGebur;
+        setKontostand(getKontostand() - betragInkGebur);
         return true;
     };
 
     bool ueberweisen(unsigned betrag, Konto &ziel) {
-        double betragInkGebur = betrag + betrag * gebuehren / 100;
-        if (this->kontostand < betragInkGebur)
+        double betragInkGebur = betrag + betrag * getGebuehren() / 100;
+        if (getKontostand() < betragInkGebur)
             return false;
-        this->kontostand -= betragInkGebur;
-        ziel.kontostand += betrag;
+        setKontostand(getKontostand() - betragInkGebur);
+        ziel.setKontostand(ziel.getKontostand() + betrag);
         return true;
     };
 
     ostream &print(ostream &o) const {
-        return o << "\t[" << kontonummer << ", " << kontostand << "€, disporahmen= " << disporahmen << ", zeichnBerSize= "
-                 << zeichnungsberechtigt.size() << ", gebuehren= " << gebuehren << "%, BISNESSKONTO]" <<endl;
+        return o << "\t[" << getKontonummer() << ", " << getKontostand() << "€, disporahmen= " << getDisporahmen()
+                 << ", zeichnBerSize= "
+                 << getZeichSize() << ", gebuehren= " << getGebuehren() << "%, BUSINESSKONTO]" << endl;
     }
 };
 
